@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react"
 export function PurchaseSection() {
   const [isVisible, setIsVisible] = useState(false)
   const [purchaseLink, setPurchaseLink] = useState('')
+  const [price, setPrice] = useState('100')
   const sectionRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
@@ -25,20 +26,21 @@ export function PurchaseSection() {
   }, [])
 
   useEffect(() => {
-    // Fetch purchase link from admin settings
-    const fetchPurchaseLink = async () => {
+    // Fetch settings from admin
+    const fetchSettings = async () => {
       try {
         const response = await fetch('/api/admin/settings')
         if (response.ok) {
           const data = await response.json()
-          setPurchaseLink(data.settings?.purchase_link || '#')
+          if (data.settings?.purchase_link) setPurchaseLink(data.settings.purchase_link)
+          if (data.settings?.price) setPrice(data.settings.price)
         }
       } catch (err) {
-        console.log('[v0] Could not load purchase link')
+        console.log('[v0] Could not load settings')
       }
     }
     
-    fetchPurchaseLink()
+    fetchSettings()
   }, [])
 
   return (
@@ -93,7 +95,7 @@ export function PurchaseSection() {
               <div className="text-center">
                 <p className="text-muted-foreground text-sm font-sans mb-1">One-time payment</p>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-5xl sm:text-6xl font-mono font-bold text-foreground">$100</span>
+                  <span className="text-5xl sm:text-6xl font-mono font-bold text-foreground">${price}</span>
                   <span className="text-muted-foreground font-sans">USD</span>
                 </div>
               </div>

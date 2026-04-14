@@ -5,10 +5,27 @@ import { useEffect, useState, useRef } from "react"
 export function HeroSection() {
   const [mounted, setMounted] = useState(false)
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
+  const [price, setPrice] = useState("100")
+  const [contactEmail, setContactEmail] = useState("sayedxiv@gmail.com")
   const sectionRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     setMounted(true)
+    
+    // Fetch settings
+    const fetchSettings = async () => {
+      try {
+        const response = await fetch('/api/admin/settings')
+        if (response.ok) {
+          const data = await response.json()
+          if (data.settings?.price) setPrice(data.settings.price)
+          if (data.settings?.contact_email) setContactEmail(data.settings.contact_email)
+        }
+      } catch (err) {
+        console.error('Failed to fetch settings:', err)
+      }
+    }
+    fetchSettings()
   }, [])
 
   useEffect(() => {
@@ -88,7 +105,7 @@ export function HeroSection() {
           </span>
         </div>
         <a
-          href="mailto:sayedxiv@gmail.com"
+          href={`mailto:${contactEmail}`}
           className="hidden sm:flex items-center gap-2 text-xs uppercase tracking-[0.25em] font-sans px-5 py-2.5 border transition-all duration-300 hover:bg-foreground hover:text-background"
           style={{
             color: "oklch(0.7 0 0)",
@@ -214,7 +231,7 @@ export function HeroSection() {
                   letterSpacing: "-0.03em",
                 }}
               >
-                100
+                {price}
               </span>
             </div>
           </div>
